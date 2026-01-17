@@ -1,0 +1,192 @@
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
+
+// import Avatar from '@mui/material/Avatar';
+import { Box } from '@mui/material';
+// import { Switch } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import MenuList from '@mui/material/MenuList';
+import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
+// import Checkbox from '@mui/material/Checkbox';
+import TableCell from '@mui/material/TableCell';
+
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { useDisableGameMutation } from 'src/redux/rtk/api';
+
+// import { Label } from 'src/components/label';
+import { Iconify } from 'src/components/iconify';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { usePopover, CustomPopover } from 'src/components/custom-popover';
+
+import { GameResultQuickEditForm } from './view/gameResult-quick-edit-form';
+// ----------------------------------------------------------------------
+
+export function GameResultTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow, index }) {
+  const [adsdetails, setAdsDetails] = useState(row);
+  const confirm = useBoolean();
+  const navigate = useNavigate();
+  const popover = usePopover();
+  const quickEdit = useBoolean();
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  const [disableUser] = useDisableGameMutation();
+
+  const handleDisable = async (id) => {
+    const res = await disableUser({
+      gameId: id,
+    });
+    if (res?.data?.success) {
+      toast.success(res?.data?.message);
+    } else {
+      toast.error(res?.error?.data?.message);
+    }
+  };
+
+  return (
+    <>
+      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
+        <TableCell sx={{ pl: 3.5 }}>{index + 1}</TableCell>
+        <TableCell>
+          <Stack spacing={2} direction="row" alignItems="center">
+            <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+              <Box component="span" sx={{ color: 'text.disabled' }}>
+                {row?.marketName ?? '-'}
+              </Box>
+            </Stack>
+          </Stack>
+        </TableCell>
+        <TableCell>
+          <Stack spacing={2} direction="row" alignItems="center">
+            <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+              <Box component="span" sx={{ color: 'text.disabled' }}>
+                {row?.result ?? '-'}
+              </Box>
+            </Stack>
+          </Stack>
+        </TableCell>
+        <TableCell>
+          <Stack spacing={2} direction="column" alignItems="flex-start">
+            <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+              <Box component="span" sx={{ color: 'text.disabled' }}>
+                {row?.date ?? '-'}
+              </Box>
+            </Stack>
+          </Stack>
+        </TableCell>
+        {/* <TableCell>
+          <Switch
+            checked={!!row.disable}
+            onChange={() => handleDisable(row?._id)}
+            sx={{
+              '& .MuiSwitch-switchBase.Mui-checked': {
+                color: 'red',
+              },
+              '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                backgroundColor: 'red',
+              },
+              '& .MuiSwitch-switchBase': {
+                color: 'green',
+              },
+              '& .MuiSwitch-switchBase + .MuiSwitch-track': {
+                backgroundColor: 'green',
+              },
+            }}
+          />
+        </TableCell> */}
+        {/* <TableCell>
+          <Stack direction="row" alignItems="center">
+            <Tooltip title="Quick View" placement="top" arrow>
+              <IconButton
+                color={quickEdit.value ? 'inherit' : 'default'}
+                onClick={() => {
+                  navigate(`${row?._id}`, {
+                    state: { adsdetails },
+                  });
+                }}
+              >
+                <Iconify icon="solar:eye-bold" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Quick Edit" placement="top" arrow>
+              <IconButton
+                color={quickEdit.value ? 'inherit' : 'default'}
+                onClick={quickEdit.onTrue}
+              >
+                <Iconify icon="solar:pen-bold" />
+              </IconButton>
+            </Tooltip>
+
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          </Stack>
+        </TableCell> */}
+      </TableRow>
+
+      <GameResultQuickEditForm
+        currentUser={row}
+        update={isUpdate}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+      />
+
+      <CustomPopover
+        open={popover.open}
+        anchorEl={popover.anchorEl}
+        onClose={popover.onClose}
+        slotProps={{ arrow: { placement: 'right-top' } }}
+      >
+        <MenuList>
+          {/* <MenuItem
+            onClick={() => {
+              const id = row?._id;
+              navigate(`${id}/details`);
+            }}
+          >
+            <Iconify icon="solar:eye-bold" />
+            view
+          </MenuItem> */}
+          {/* <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            disabled
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem> */}
+
+          <MenuItem
+            onClick={() => {
+              setIsUpdate(true);
+              quickEdit.onTrue();
+              popover.onClose();
+              // onEditRow();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        </MenuList>
+      </CustomPopover>
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Delete"
+        content="Are you sure want to delete?"
+        action={
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
+            Delete
+          </Button>
+        }
+      />
+    </>
+  );
+}
