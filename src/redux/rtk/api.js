@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const BASE_URL = `${import.meta.env.VITE_APP_API}`;
+const BASE_URL = 'https://vlockerbackend.onrender.com/api/';
 
 export const api = createApi({
   reducerPath: 'api',
