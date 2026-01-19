@@ -17,6 +17,7 @@ import {
   useLockDeviceMutation,
   useUnlockDeviceMutation,
   useUpdateCustomerLoanMutation,
+  useUpdateDevicePolicyMutation,
 } from 'src/redux/rtk/api';
 
 import { Iconify } from 'src/components/iconify';
@@ -29,6 +30,34 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
   const [updateCustomerLoan] = useUpdateCustomerLoanMutation();
   const [lockDevice] = useLockDeviceMutation();
   const [unlockDevice] = useUnlockDeviceMutation();
+  const [updateDevicePolicy] = useUpdateDevicePolicyMutation();
+
+  const handlePolicyChange = async (type, value) => {
+    try {
+      const currentPolicy = row.devicePolicy || {
+        isResetAllowed: false,
+        isUninstallAllowed: false,
+      };
+      const newPolicy = { ...currentPolicy };
+
+      if (type === 'RESET') newPolicy.isResetAllowed = value;
+      if (type === 'UNINSTALL') newPolicy.isUninstallAllowed = value;
+
+      const res = await updateDevicePolicy({
+        loanId: row._id,
+        data: newPolicy,
+      });
+
+      if (res?.data?.success) {
+        toast.success('Device policy updated');
+        popover.onClose();
+      } else {
+        toast.error(res?.error?.data?.message || 'Failed to update policy');
+      }
+    } catch (error) {
+      toast.error('Something went wrong');
+    }
+  };
 
   const handleStatus = async (status) => {
     try {
@@ -182,6 +211,35 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
               <Iconify icon="eva:unlock-fill" />
               Unlock Device
             </MenuItem>
+          )}
+
+          {/* Device Policy Controls */}
+          {row.loanStatus === 'APPROVED' && (
+            <>
+              <MenuItem
+                onClick={() => handlePolicyChange('RESET', !row.devicePolicy?.isResetAllowed)}
+                sx={{ color: row.devicePolicy?.isResetAllowed ? 'error.main' : 'success.main' }}
+              >
+                <Iconify
+                  icon={row.devicePolicy?.isResetAllowed ? 'eva:slash-fill' : 'eva:refresh-fill'}
+                />
+                {row.devicePolicy?.isResetAllowed ? 'Disable Reset' : 'Enable Reset'}
+              </MenuItem>
+
+              <MenuItem
+                onClick={() =>
+                  handlePolicyChange('UNINSTALL', !row.devicePolicy?.isUninstallAllowed)
+                }
+                sx={{ color: row.devicePolicy?.isUninstallAllowed ? 'error.main' : 'success.main' }}
+              >
+                <Iconify
+                  icon={
+                    row.devicePolicy?.isUninstallAllowed ? 'eva:slash-fill' : 'eva:trash-2-fill'
+                  }
+                />
+                {row.devicePolicy?.isUninstallAllowed ? 'Disable Uninstall' : 'Enable Uninstall'}
+              </MenuItem>
+            </>
           )}
         </MenuList>
       </CustomPopover>

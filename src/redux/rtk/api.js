@@ -113,6 +113,15 @@ export const api = createApi({
       invalidatesTags: ['customer-loans'],
     }),
 
+    updateDevicePolicy: builder.mutation({
+      query: ({ loanId, data }) => ({
+        url: `customerLoan/policy/${loanId}`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['customer-loans'],
+    }),
+
     getAllLoan: builder.query({
       query: ({ status, search, page }) => ({
         url: `keys/allKeys?page=${page}&limit=20&status=${status}&search=${search}`,
@@ -611,6 +620,7 @@ export const {
   useUpdateCustomerLoanMutation,
   useLockDeviceMutation,
   useUnlockDeviceMutation,
+  useUpdateDevicePolicyMutation,
   useUpdateCityMutation,
   useDeleteCityMutation,
 } = api;
