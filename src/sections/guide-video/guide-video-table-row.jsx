@@ -1,37 +1,32 @@
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 
 import Box from '@mui/material/Box';
 // import Link from '@mui/material/Link';
-import { Switch } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 // import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import NoPreview from 'src/assets/NoPreview.jpg';
-import { useUserDisableMutation } from 'src/redux/rtk/api';
+import { useDeleteInstallactionVideoMutation } from 'src/redux/rtk/api';
 
 // import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
-import { UserQuickEditForm } from './user-quick-edit-form';
+import { GuideVideoQuickEditForm } from './guide-video-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function UserTableRow({
+export function GuideVideoTableRow({
   row,
   selected,
   onEditRow,
@@ -42,17 +37,17 @@ export function UserTableRow({
 }) {
   const confirm = useBoolean();
 
-  const navigate = useNavigate();
-
   const popover = usePopover();
 
   const quickEdit = useBoolean();
   const [isUpdate, setIsUpdate] = useState(false);
 
-  const [disableUser] = useUserDisableMutation();
+  const [deleteVideo] = useDeleteInstallactionVideoMutation();
 
-  const handleDisable = async (id) => {
-    const res = await disableUser(id);
+  const handleDelete = async (id) => {
+    const res = await deleteVideo({
+      videoId: id,
+    });
     if (res?.data?.success) {
       toast.success(res?.data?.message);
     } else {
@@ -70,19 +65,33 @@ export function UserTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row?.name} src={row?.image || NoPreview} />
+            <Avatar
+              alt={row?.title}
+              src={`${import.meta.env.VITE_APP_BASE_URL}/${row?.thumbnail}`}
+            />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row?.name || '-'}
-              </Box>
-              <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row?.phone || '-'}
+                {row?.title || '-'}
               </Box>
             </Stack>
           </Stack>
         </TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+            <Box component="span" sx={{ color: 'text.disabled' }}>
+              {row?.channelName || '-'}
+            </Box>
+          </Stack>
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+            <Box component="span" sx={{ color: 'text.disabled' }}>
+              {row?.description || '-'}
+            </Box>
+          </Stack>
+        </TableCell>
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {' '}
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
@@ -96,7 +105,7 @@ export function UserTableRow({
         </TableCell> */}
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phoneNumber || '-'}</TableCell> */}
-        <TableCell>
+        {/* <TableCell>
           <Switch
             checked={!!row.isDisabled}
             onChange={() => handleDisable(row?._id)}
@@ -115,7 +124,7 @@ export function UserTableRow({
               },
             }}
           />
-        </TableCell>
+        </TableCell> */}
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role?row.role:'dev'}</TableCell> */}
 
@@ -135,7 +144,7 @@ export function UserTableRow({
 
         <TableCell>
           <Stack direction="row" alignItems="center">
-            <Tooltip title="User Notification" placement="top" arrow>
+            {/* <Tooltip title="User Notification" placement="top" arrow>
               <IconButton
                 color={quickEdit.value ? 'inherit' : 'default'}
                 onClick={() => {
@@ -145,7 +154,7 @@ export function UserTableRow({
               >
                 <NotificationAddIcon icon="mingcute:add-line" />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
@@ -154,7 +163,7 @@ export function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm
+      <GuideVideoQuickEditForm
         currentUser={row}
         update={isUpdate}
         open={quickEdit.value}
@@ -168,35 +177,27 @@ export function UserTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          {/* <MenuItem
+          <MenuItem
             onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem> */}
-
-          {/* <MenuItem
-            onClick={() => {
-              onEditRow();
+              setIsUpdate(true);
+              quickEdit.onTrue();
               popover.onClose();
             }}
           >
             <Iconify icon="solar:pen-bold" />
             Edit
-          </MenuItem> */}
-          <MenuItem
-            onClick={() => {
-              navigate(`user/${row?._id}`);
-            }}
-          >
-            <Iconify icon="solar:eye-bold" />
-            View Details
           </MenuItem>
         </MenuList>
+        <MenuItem
+          onClick={() => {
+            confirm.onTrue();
+            popover.onClose();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Delete
+        </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
@@ -205,7 +206,7 @@ export function UserTableRow({
         title="Delete"
         content="Are you sure want to delete?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={() => handleDelete(row?._id)}>
             Delete
           </Button>
         }

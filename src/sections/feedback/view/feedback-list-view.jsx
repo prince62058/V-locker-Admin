@@ -7,7 +7,6 @@ import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import TableBody from '@mui/material/TableBody';
-import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -17,8 +16,8 @@ import { useSetState } from 'src/hooks/use-set-state';
 
 import { _roles } from 'src/_mock';
 import { varAlpha } from 'src/theme/styles';
-import { useGetAllUsersQuery } from 'src/redux/rtk/api';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetAllFeedbackQuery } from 'src/redux/rtk/api';
 
 import { Scrollbar } from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -34,28 +33,29 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { UserTableRow } from '../user-table-row';
-import { UserTableToolbar } from '../user-table-toolbar';
-import { UserQuickEditForm } from '../user-quick-edit-form';
+import { FeedbackTableRow } from '../feedback-table-row';
+import { FeedbackTableToolbar } from '../feedback-table-toolbar';
+import { FeedbackQuickEditForm } from '../feedback-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
-  { value: 'false', label: 'Active' },
-  { value: 'true', label: 'Disable' },
+  // { value: 'false', label: 'Active' },
+  // { value: 'true', label: 'Disable' },
 ];
 
 const TABLE_HEAD = [
-  { id: 'sno', label: 'S No.', width: 100 },
-  { id: 'name', label: 'Name & Phone', width: 180 },
-  { id: 'status', label: 'Disable', width: 100 },
-  { id: 'action', label: 'Action', width: 88 },
+  { id: 'sno', label: 'S No.', width: 50 },
+  { id: 'name', label: 'Name & Email', width: 80 },
+  { id: 'feedback', label: 'Feedback', width: 250 },
+  { id: 'date', label: 'Date', width: 100 },
+  // { id: 'notification', label: 'Notification', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export function UserListView() {
+export function FeedbackListView() {
   const table = useTable();
 
   const router = useRouter();
@@ -74,7 +74,7 @@ export function UserListView() {
     setCurrentPage(newPage);
   }, []);
 
-  const { data, isLoading } = useGetAllUsersQuery({
+  const { data, isLoading } = useGetAllFeedbackQuery({
     type: 'USER',
     status: filters.state.status,
     page: currentPage,
@@ -117,8 +117,8 @@ export function UserListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="User List"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'User' }]}
+          heading="Feedback List"
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Feedback' }]}
           action={
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {/* <LoadingButton
@@ -148,7 +148,7 @@ export function UserListView() {
               >
                 Export PDF
               </LoadingButton> */}
-              <Button
+              {/* <Button
                 variant="contained"
                 startIcon={<NotificationAddIcon icon="mingcute:add-line" />}
                 onClick={() => {
@@ -157,7 +157,7 @@ export function UserListView() {
                 }}
               >
                 Send Notification
-              </Button>
+              </Button> */}
             </Box>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -178,7 +178,7 @@ export function UserListView() {
             ))}
           </Tabs>
 
-          <UserTableToolbar
+          <FeedbackTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
             options={{ roles: _roles }}
@@ -196,7 +196,7 @@ export function UserListView() {
 
                 <TableBody>
                   {dataFiltered?.map((row, i) => (
-                    <UserTableRow
+                    <FeedbackTableRow
                       key={row._id}
                       row={row}
                       index={i}
@@ -249,7 +249,7 @@ export function UserListView() {
           </Button>
         }
       />
-      <UserQuickEditForm update={isUpdate} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <FeedbackQuickEditForm update={isUpdate} open={quickEdit.value} onClose={quickEdit.onFalse} />
     </>
   );
 }

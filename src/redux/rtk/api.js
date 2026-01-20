@@ -17,7 +17,20 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['userProfile', 'users', 'loan', 'brand', 'model', 'state', 'city', 'company'],
+  tagTypes: [
+    'userProfile',
+    'users',
+    'customers',
+    'customer-loans',
+    'loan',
+    'brand',
+    'model',
+    'state',
+    'city',
+    'feedback',
+    'video',
+    'company',
+  ],
   endpoints: (builder) => ({
     // Define your CRUD endpoints here
 
@@ -57,12 +70,37 @@ export const api = createApi({
         `user?userType=${type}&search=${search}&isDisabled=${status}&page=${page}&limit=20`,
       providesTags: ['users'],
     }),
+    userDetail: builder.query({
+      query: ({ userId }) => ({
+        url: `user/${userId}`,
+      }),
+    }),
     userDisable: builder.mutation({
       query: (userId) => ({
         url: `user/disable/${userId}`,
         method: 'PATCH',
       }),
       invalidatesTags: ['users'],
+    }),
+
+    // customers
+    getAllCustomers: builder.query({
+      query: ({ type, search, page, status }) =>
+        `customers?userType=${type}&search=${search}&isDisabled=${status}&page=${page}&limit=20`,
+      providesTags: ['customers'],
+    }),
+    customerDetail: builder.query({
+      query: ({ customerId }) => ({
+        url: `customers/${customerId}`,
+      }),
+    }),
+
+    // Feedback
+    getAllFeedback: builder.query({
+      query: ({ search, page }) => ({
+        url: `feedback?page=${page}&search=${search}&limit=20`,
+      }),
+      providesTags: ['feedback'],
     }),
 
     // company
@@ -79,7 +117,6 @@ export const api = createApi({
       invalidatesTags: ['company'],
     }),
 
-    // Loan Request
     // Customer Loan Management
     getAllCustomerLoan: builder.query({
       query: ({ page, status, search }) => ({
@@ -274,6 +311,38 @@ export const api = createApi({
       invalidatesTags: ['city'],
     }),
 
+    // Insatallation Video
+    getAllInstallationVideo: builder.query({
+      query: ({ search, page }) => ({
+        url: `upload?page=${page}&search=${search}&limit=20`,
+      }),
+      providesTags: ['video'],
+    }),
+    createInstallationVideo: builder.mutation({
+      query: ({ data }) => ({
+        url: `upload/upload-video`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['video'],
+    }),
+    updateInstallatioVideo: builder.mutation({
+      query: ({ data, videoId }) => ({
+        url: `upload/${videoId}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['video'],
+    }),
+    deleteInstallactionVideo: builder.mutation({
+      query: ({ data, videoId }) => ({
+        url: `upload/${videoId}`,
+        method: 'DELETE',
+        body: data,
+      }),
+      invalidatesTags: ['video'],
+    }),
+
     // ----------------------------------------------- sub admin ----------------------------------------------
     getAllSubAdmin: builder.query({
       query: ({ type, search, page, status }) =>
@@ -337,47 +406,6 @@ export const api = createApi({
       invalidatesTags: ['banner'],
     }),
 
-    // -------------------------------------------- QR Code -------------------------------------------
-    getQrCode: builder.query({
-      query: () => `admin/getUpiBarcode`,
-      providesTags: ['qrCode'],
-    }),
-    updateQrCode: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/updateUpiBarcode`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['qrCode'],
-    }),
-
-    // -------------------------------------------- App Info -------------------------------------------
-    getAppInfo: builder.query({
-      query: () => `admin/appInfo`,
-      providesTags: ['appInfo'],
-    }),
-    updateAppInfo: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/updateAppinfo`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['appInfo'],
-    }),
-
-    // -------------------------------------------- how to play -------------------------------------------
-    getHowtoplay: builder.query({
-      query: () => `admin/getHowToPlay`,
-      providesTags: ['howtoplay'],
-    }),
-    updateHowroplay: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/howToPlay`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['howtoplay'],
-    }),
 
     // -------------------------------------------- leadboard -------------------------------------------
     getTodayLeadboard: builder.query({
@@ -405,89 +433,6 @@ export const api = createApi({
       invalidatesTags: ['leadboard'],
     }),
 
-    // -------------------------------------------------------- game -----------------------------------------------------
-    getAllGames: builder.query({
-      query: ({ status, search, page }) => ({
-        url: `admin/getAllGames?disable=${status}&search=${search}&page=${page}`,
-      }),
-      providesTags: ['game'],
-    }),
-    getGameDetails: builder.query({
-      query: ({ gameId }) => ({
-        url: `admin/getGameById?gameId=${gameId}`,
-      }),
-      providesTags: ['game'],
-    }),
-    createGame: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/createGame`,
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['game'],
-    }),
-    updateGame: builder.mutation({
-      query: ({ gameId, data }) => ({
-        url: `admin/updateGame?gameId=${gameId}`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['game'],
-    }),
-    disableGame: builder.mutation({
-      query: ({ gameId }) => ({
-        url: `admin/disableGame?gameId=${gameId}`,
-        method: 'PUT',
-      }),
-      invalidatesTags: ['game'],
-    }),
-
-    // -------------------------------------------------------- betting game -----------------------------------------------------
-    getAllBettingGames: builder.query({
-      query: ({ gameType, status, sDate, page }) => ({
-        url: `admin/adminGetBattingGameList?gameType=${gameType}&filter=${status}&startDate=${sDate}&page=${page}`,
-      }),
-      providesTags: ['bettingGame'],
-    }),
-    getBettingGameDetails: builder.query({
-      query: ({ gameId }) => ({
-        url: `admin/adminGetGameById?gameId=${gameId}`,
-      }),
-      providesTags: ['bettingGameDetails'],
-    }),
-
-    // -------------------------------------------------------- game rule-----------------------------------------------------
-    getAllGamesRules: builder.query({
-      query: () => ({
-        url: `admin/getGameBet`,
-      }),
-      providesTags: ['gameRule'],
-    }),
-    updateGameRules: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/updateGameBet`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['gameRule'],
-    }),
-
-    // ------------------------------------------------------------ Game result -----------------------------------
-    getAllGameResult: builder.query({
-      query: ({ status, sDate, page }) => ({
-        url: `admin/results?filter=${status}&startDate=${sDate}&page=${page}`,
-      }),
-      providesTags: ['gameResult'],
-    }),
-    createGameResult: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/results`,
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['gameResult'],
-    }),
-
     // --------------------------------------------------------Notification -----------------------------------
     createNotificationForAllUser: builder.mutation({
       query: ({ data }) => ({
@@ -503,67 +448,14 @@ export const api = createApi({
         body: data,
       }),
     }),
-
-    // ------------------------------------------------------------ Transaction -----------------------------------
-    getAllTransaction: builder.query({
-      query: ({ status, search, page }) => ({
-        url: `admin/getTranstionList?status=${status}&search=${search}&page=${page}`,
-      }),
-      providesTags: ['transaction'],
-    }),
-    updateTransactionStatus: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/updateTranstionStatus`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['transaction'],
-    }),
-
-    // ------------------------------------------------------------ Withdraw -----------------------------------
-    getAllWithdraw: builder.query({
-      query: ({ status, search, page }) => ({
-        url: `admin/getListWithdraw?search=${search}&status=${status}&page=${page}`,
-      }),
-      providesTags: ['withdraw'],
-    }),
-    updateWithdrawStatus: builder.mutation({
-      query: ({ data }) => ({
-        url: `admin/updateWithdrawStatus`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['withdraw'],
-    }),
-
-    // --------------------------------------------------------- Chat ----------------------------------------------------------
-    getAllThread: builder.query({
-      query: ({ search, page }) => ({
-        url: `admin/getAllThreadByAdmin?search=${search}&page=${page}`,
-      }),
-      providesTags: ['thread'],
-    }),
-    getAllMessage: builder.query({
-      query: ({ threadId, page }) => ({
-        url: `admin/getChatByThreadId?threadId=${threadId}&page=${page}`,
-      }),
-      providesTags: ['message'],
-    }),
   }),
 });
 
 export const {
   useGetDashboardGraphsQuery,
   useGetAllUsersQuery,
+  useGetAllCustomersQuery,
   useGetAllSubAdminQuery,
-  useGetMobileAdminsQuery,
-  useGetAllGamesQuery,
-  useGetGameDetailsQuery,
-  useCreateGameMutation,
-  useUpdateGameMutation,
-  useDisableGameMutation,
-  useGetAllGamesRulesQuery,
-  useUpdateGameRulesMutation,
   useCreateNotificationForAllUserMutation,
   useCreateNotificationForSingleUserMutation,
   useUserLoginMutation,
@@ -572,33 +464,23 @@ export const {
   useUserDisableMutation,
   useDisableAdminMutation,
   useCreateSubAdminMutation,
+  useGetMobileAdminsQuery,
   useCreateMobileAdminMutation,
   useDeleteMobileAdminMutation,
   useUpdateSubAdminMutation,
   useGetBannerQuery,
   useUpdateBannerMutation,
-  useGetQrCodeQuery,
-  useUpdateQrCodeMutation,
-  useGetAppInfoQuery,
-  useUpdateAppInfoMutation,
-  useGetHowtoplayQuery,
-  useUpdateHowroplayMutation,
-  useGetAllTransactionQuery,
-  useUpdateTransactionStatusMutation,
-  useGetAllWithdrawQuery,
-  useUpdateWithdrawStatusMutation,
   useGetTodayLeadboardQuery,
   useGetAllLeadboardQuery,
   useCreateLeadboardMutation,
   useUpdateLeadboardMutation,
   useGetCompanyQuery,
   useUpdateCompanyMutation,
-  useGetAllThreadQuery,
-  useGetAllMessageQuery,
-  useGetAllBettingGamesQuery,
-  useGetBettingGameDetailsQuery,
-  useGetAllGameResultQuery,
-  useCreateGameResultMutation,
+  useGetAllCustomerLoanQuery,
+  useUpdateCustomerLoanMutation,
+  useLockDeviceMutation,
+  useUnlockDeviceMutation,
+  useUpdateDevicePolicyMutation,
   useGetAllLoanQuery,
   useUpdateLoanStatusMutation,
   useSendNotificationSingleAndAllUserMutation,
@@ -616,11 +498,13 @@ export const {
   useDeleteStateMutation,
   useGetAllCityQuery,
   useCreateCityMutation,
-  useGetAllCustomerLoanQuery,
-  useUpdateCustomerLoanMutation,
-  useLockDeviceMutation,
-  useUnlockDeviceMutation,
-  useUpdateDevicePolicyMutation,
   useUpdateCityMutation,
   useDeleteCityMutation,
+  useGetAllFeedbackQuery,
+  useGetAllInstallationVideoQuery,
+  useCreateInstallationVideoMutation,
+  useUpdateInstallatioVideoMutation,
+  useDeleteInstallactionVideoMutation,
+  useUserDetailQuery,
+  useCustomerDetailQuery,
 } = api;

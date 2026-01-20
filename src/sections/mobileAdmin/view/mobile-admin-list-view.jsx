@@ -116,8 +116,8 @@ export default function MobileAdminListView() {
         </TableContainer>
 
         <TablePaginationCustom
-          count={users?.pagination?.totalUsers || 0}
-          page={page - 1} // MUI uses 0-based index
+          count={users?.pagination?.totalPages || 1}
+          page={page} // MUI uses 0-based index
           rowsPerPage={20} // Fixed limit as per API
           onPageChange={(e, newPage) => setPage(newPage + 1)}
           // onRowsPerPageChange={table.onChangeRowsPerPage}

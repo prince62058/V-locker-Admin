@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 // import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
+// import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 // import MenuItem from '@mui/material/MenuItem';
@@ -102,15 +102,16 @@ export function StateQuickEditForm({ currentUser, open, onClose, update }) {
         <DialogTitle>Quick {update ? 'Update' : 'Create'}</DialogTitle>
 
         <DialogContent>
-          <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
+          {/* <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
             Account is waiting for confirmation
-          </Alert>
+          </Alert> */}
 
           <Box
             rowGap={3}
             columnGap={2}
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
+            mt={2}
           >
             <Field.Text name="name" label="Name" />
             {/* <Field.Text name="gameOpenTime" label="Open Time" type="time" />

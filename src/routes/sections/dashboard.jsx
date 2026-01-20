@@ -19,28 +19,22 @@ const GraphDashboard = lazy(() => import('src/pages/dashboard/dasboard'));
 const UsersList = lazy(() => import('src/pages/dashboard/users/index'));
 const LoanList = lazy(() => import('src/pages/dashboard/keys/index'));
 const CustomerLoanList = lazy(() => import('src/pages/dashboard/customer-loan/index'));
+const CustomersList = lazy(() => import('src/pages/dashboard/customers/index'));
+const UserDetailPage = lazy(() => import('src/sections/users/view/user-details-view.jsx'));
+const CustomerDetailPage = lazy(
+  () => import('src/sections/customers/view/customer-details-view.jsx')
+);
+const MobileAdminList = lazy(() => import('src/pages/dashboard/mobileAdmin/index'));
+const FeedbackList = lazy(() => import('src/pages/dashboard/feedback/index'));
 const BrandList = lazy(() => import('src/pages/dashboard/brand/index'));
 const ModelList = lazy(() => import('src/pages/dashboard/model/index'));
 const StateList = lazy(() => import('src/pages/dashboard/state/index'));
 const CityList = lazy(() => import('src/pages/dashboard/city/index'));
+const GuideVideoList = lazy(() => import('src/pages/dashboard/guide-video/index'));
 const AdminList = lazy(() => import('src/pages/dashboard/adminList/index'));
-const MobileAdminList = lazy(() => import('src/pages/dashboard/mobileAdmin/index'));
-const QrCodeViewPage = lazy(() => import('src/pages/dashboard/qrCode'));
-const AppInfoViewPage = lazy(() => import('src/pages/dashboard/appInfo'));
-const GamesViewPage = lazy(() => import('src/pages/dashboard/game'));
-const GameResultViewPage = lazy(() => import('src/pages/dashboard/gameResult'));
-const GamesDetailPage = lazy(() => import('src/sections/game/view/game-details-view'));
-const HowtoplayViewPage = lazy(() => import('src/pages/dashboard/howtoplay'));
 const CompanyViewPage = lazy(() => import('src/pages/dashboard/company'));
-const TransactionViewPage = lazy(() => import('src/pages/dashboard/transaction'));
-const GameRuleViewPage = lazy(() => import('src/pages/dashboard/gameRule'));
-const BettingGameViewPage = lazy(() => import('src/pages/dashboard/bettingGame'));
-const BtGamesDetailPage = lazy(() => import('src/sections/bettingGame/view/btGame-details-view'));
-const WithdrawViewPage = lazy(() => import('src/pages/dashboard/withdraw'));
-const BannerPage = lazy(() => import('src/pages/dashboard/banner'));
 const ProfilePage = lazy(() => import('src/pages/dashboard/profile'));
 const LeadboardPage = lazy(() => import('src/pages/dashboard/leadboard'));
-const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
 
 // ----------------------------------------------------------------------
 
@@ -57,27 +51,22 @@ const userData = JSON.parse(sessionStorage.getItem('jwt_access_token'));
 const filter = [];
 
 const routes = [
-  { path: 'banner', element: <BannerPage />, permission: 'BANNER' },
   {
     path: 'user-management',
     children: [
       { element: <UsersList />, index: true },
+      { path: 'user/:id', element: <UserDetailPage /> },
       { path: 'adminList', element: <AdminList /> },
       { path: 'mobileAdmin', element: <MobileAdminList /> },
     ],
     permission: 'USERMANAGER',
   },
   {
-    path: 'qrCode',
-    children: [{ element: <QrCodeViewPage />, index: true }],
-    permission: 'QR',
-  },
-  {
     path: 'loan',
     children: [{ element: <LoanList />, index: true }],
     permission: 'LOAN',
   },
-  {
+    {
     path: 'customer-loan',
     children: [{ element: <CustomerLoanList />, index: true }],
     permission: 'LOAN',
@@ -93,58 +82,22 @@ const routes = [
     permission: 'MODEL',
   },
   {
+    path: 'feedback',
+    children: [{ element: <FeedbackList />, index: true }],
+    permission: 'FEEDBACK',
+  },
+  {
+    path: 'guide-video',
+    children: [{ element: <GuideVideoList />, index: true }],
+    permission: 'GUIDEVIDEOS',
+  },
+  {
     path: 'state',
     children: [
       { element: <StateList />, index: true },
       { path: ':id', element: <CityList /> },
     ],
     permission: 'STATE',
-  },
-  {
-    path: 'appInfo',
-    children: [{ element: <AppInfoViewPage />, index: true }],
-    permission: 'APPINFO',
-  },
-  {
-    path: 'games',
-    children: [
-      { element: <GamesViewPage />, index: true },
-      { path: ':id', element: <GamesDetailPage /> },
-    ],
-    permission: 'GAME',
-  },
-  {
-    path: 'bettingGame',
-    children: [
-      { element: <BettingGameViewPage />, index: true },
-      { path: ':id', element: <BtGamesDetailPage /> },
-    ],
-    permission: 'BTGAME',
-  },
-  {
-    path: 'gameRules',
-    children: [{ element: <GameRuleViewPage />, index: true }],
-    permission: 'GAMERULE',
-  },
-  {
-    path: 'gameResult',
-    children: [{ element: <GameResultViewPage />, index: true }],
-    permission: 'GAMERESULT',
-  },
-  {
-    path: 'transaction',
-    children: [{ element: <TransactionViewPage />, index: true }],
-    permission: 'TRANSACTION',
-  },
-  {
-    path: 'withdraw',
-    children: [{ element: <WithdrawViewPage />, index: true }],
-    permission: 'WITHDRAW',
-  },
-  {
-    path: 'howtoplay',
-    children: [{ element: <HowtoplayViewPage />, index: true }],
-    permission: 'HOWTOPLAY',
   },
   {
     path: 'company',
@@ -155,16 +108,6 @@ const routes = [
     path: 'profile',
     children: [{ element: <ProfilePage />, index: true }],
     permission: 'PROFILE',
-  },
-  {
-    path: 'leadboard',
-    children: [{ element: <LeadboardPage />, index: true }],
-    permission: 'LEADBOARD',
-  },
-  {
-    path: 'chat',
-    children: [{ element: <ChatPage />, index: true }],
-    permission: 'CHAT',
   },
 ];
 

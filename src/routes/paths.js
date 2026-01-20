@@ -104,35 +104,10 @@ export const paths = {
     },
     userManagement: {
       root: `${ROOTS.DASHBOARD}/user-management`,
+      details: (id) => `${ROOTS.DASHBOARD}/user-details/${id}`,
+      // customer: `${ROOTS.DASHBOARD}/user-management/customer`,
+      // customerDetails: (id) => `${ROOTS.DASHBOARD}/customer/${id}`,
       adminList: `${ROOTS.DASHBOARD}/user-management/adminList`,
-    },
-    qrCode: {
-      list: `${ROOTS.DASHBOARD}/qrCode`,
-    },
-    appInfo: {
-      list: `${ROOTS.DASHBOARD}/appInfo`,
-    },
-    games: {
-      list: `${ROOTS.DASHBOARD}/games`,
-      details: (id) => `${ROOTS.DASHBOARD}/game-details/${id}`,
-    },
-    bettingGame: {
-      list: `${ROOTS.DASHBOARD}/bettingGame`,
-    },
-    gameRules: {
-      list: `${ROOTS.DASHBOARD}/gameRules`,
-    },
-    gameResult: {
-      list: `${ROOTS.DASHBOARD}/gameResult`,
-    },
-    transaction: {
-      list: `${ROOTS.DASHBOARD}/transaction`,
-    },
-    withdraw: {
-      list: `${ROOTS.DASHBOARD}/withdraw`,
-    },
-    howtoplay: {
-      list: `${ROOTS.DASHBOARD}/howtoplay`,
     },
     company: {
       list: `${ROOTS.DASHBOARD}/company`,
@@ -155,12 +130,15 @@ export const paths = {
     model: {
       list: `${ROOTS.DASHBOARD}/model`,
     },
+    feedback: {
+      list: `${ROOTS.DASHBOARD}/feedback`,
+    },
+    guideVideo: {
+      list: `${ROOTS.DASHBOARD}/guide-video`,
+    },
     state: {
       list: `${ROOTS.DASHBOARD}/state`,
       details: (id) => `${ROOTS.DASHBOARD}/state/${id}`,
-    },
-    chat: {
-      list: `${ROOTS.DASHBOARD}/chat`,
     },
 
     // -------------------------------------------------------- LeadKart Path End -----------------------------------------------------
