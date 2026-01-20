@@ -1,25 +1,20 @@
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 
 import Box from '@mui/material/Box';
 // import Link from '@mui/material/Link';
-import { Switch } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 // import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import NoPreview from 'src/assets/NoPreview.jpg';
+import { fDate } from 'src/utils/format-time';
+
 import { useUserDisableMutation } from 'src/redux/rtk/api';
 
 // import { Label } from 'src/components/label';
@@ -27,11 +22,11 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
-import { UserQuickEditForm } from './user-quick-edit-form';
+import { FeedbackQuickEditForm } from './feedback-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function UserTableRow({
+export function FeedbackTableRow({
   row,
   selected,
   onEditRow,
@@ -41,8 +36,6 @@ export function UserTableRow({
   currentPage,
 }) {
   const confirm = useBoolean();
-
-  const navigate = useNavigate();
 
   const popover = usePopover();
 
@@ -70,18 +63,21 @@ export function UserTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row?.name} src={row?.image || NoPreview} />
+            {/* <Avatar alt={row?.userId?.name} src={`${import.meta.env.VITE_APP_BASE_URL}/${row?.userId?.image}`} /> */}
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row?.name || '-'}
+                {row?.userId?.name || '-'}
               </Box>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row?.phone || '-'}
+                {row?.userId?.email || '-'}
               </Box>
             </Stack>
           </Stack>
         </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'wrap' }}>{row.feedback || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'wrap' }}>{fDate(row.createdAt)}</TableCell>
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {' '}
@@ -96,7 +92,7 @@ export function UserTableRow({
         </TableCell> */}
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.phoneNumber || '-'}</TableCell> */}
-        <TableCell>
+        {/* <TableCell>
           <Switch
             checked={!!row.isDisabled}
             onChange={() => handleDisable(row?._id)}
@@ -115,7 +111,7 @@ export function UserTableRow({
               },
             }}
           />
-        </TableCell>
+        </TableCell> */}
 
         {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role?row.role:'dev'}</TableCell> */}
 
@@ -133,7 +129,7 @@ export function UserTableRow({
           </Label>
         </TableCell> */}
 
-        <TableCell>
+        {/* <TableCell>
           <Stack direction="row" alignItems="center">
             <Tooltip title="User Notification" placement="top" arrow>
               <IconButton
@@ -151,10 +147,10 @@ export function UserTableRow({
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           </Stack>
-        </TableCell>
+        </TableCell> */}
       </TableRow>
 
-      <UserQuickEditForm
+      <FeedbackQuickEditForm
         currentUser={row}
         update={isUpdate}
         open={quickEdit.value}
@@ -168,7 +164,7 @@ export function UserTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          {/* <MenuItem
+          <MenuItem
             onClick={() => {
               confirm.onTrue();
               popover.onClose();
@@ -177,9 +173,9 @@ export function UserTableRow({
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
-          </MenuItem> */}
+          </MenuItem>
 
-          {/* <MenuItem
+          <MenuItem
             onClick={() => {
               onEditRow();
               popover.onClose();
@@ -187,14 +183,6 @@ export function UserTableRow({
           >
             <Iconify icon="solar:pen-bold" />
             Edit
-          </MenuItem> */}
-          <MenuItem
-            onClick={() => {
-              navigate(`user/${row?._id}`);
-            }}
-          >
-            <Iconify icon="solar:eye-bold" />
-            View Details
           </MenuItem>
         </MenuList>
       </CustomPopover>

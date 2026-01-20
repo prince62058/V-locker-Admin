@@ -29,7 +29,7 @@ export const allLangs = [
     label: 'English',
     countryCode: 'GB',
     adapterLocale: 'en',
-    numberFormat: { code: 'en-IN', currency: 'INR' },
+    numberFormat: { code: 'en-US', currency: 'USD' },
     systemValue: {
       components: { ...enUSDate.components, ...enUSDataGrid.components },
     },

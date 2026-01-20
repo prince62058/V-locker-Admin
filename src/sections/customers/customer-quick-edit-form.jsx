@@ -2,51 +2,44 @@ import { z as zod } from 'zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
-// import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-// import MenuItem from '@mui/material/MenuItem';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-// import { USER_STATUS_OPTIONS } from 'src/_mock';
-
-
-import {
-  useCreateBrandMutation,
-  useUpdateBrandMutation,
-} from 'src/redux/rtk/api';
+import { useSendNotificationSingleAndAllUserMutation } from 'src/redux/rtk/api';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export const BrandQuickEditSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
+export const CustomerQuickEditSchema = zod.object({
+  title: zod.string().min(1, { message: 'Title is required!' }),
+  description: zod.string().min(1, { message: 'Description is required!' }),
 });
 
 // ----------------------------------------------------------------------
 
-export function BrandQuickEditForm({ currentUser, open, onClose, update }) {
+export function CustomerQuickEditForm({ currentUser, open, onClose, update }) {
+  const [sendNotification] = useSendNotificationSingleAndAllUserMutation();
+
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.brandName || '',
-      // description: currentUser?.description || '',
-      // gameOpenTime: currentUser?.gameOpenTime || '',
-      // gameClosingTime: currentUser?.gameClosingTime || '',
+      title: '',
+      silent: true,
+      description: '',
     }),
-    [currentUser]
+    []
   );
 
   const methods = useForm({
     mode: 'all',
-    resolver: zodResolver(BrandQuickEditSchema),
+    resolver: zodResolver(CustomerQuickEditSchema),
     defaultValues,
   });
 
@@ -56,17 +49,16 @@ export function BrandQuickEditForm({ currentUser, open, onClose, update }) {
     formState: { isSubmitting },
   } = methods;
 
-  const [createBrand] = useCreateBrandMutation();
-  const [updateBrand] = useUpdateBrandMutation();
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (update) {
-        const res = await updateBrand({
+        const res = await sendNotification({
           data: {
-            brandName: data?.name,
+            userId: currentUser?._id,
+            title: data.title,
+            bodi: data.description,
+            silent: true,
           },
-          brandId: currentUser?._id,
         });
         reset();
         onClose();
@@ -76,9 +68,11 @@ export function BrandQuickEditForm({ currentUser, open, onClose, update }) {
           toast.error(res?.error?.data?.message);
         }
       } else {
-        const res = await createBrand({
+        const res = await sendNotification({
           data: {
-            brandName: data?.name,
+            title: data.title,
+            bodi: data.description,
+            silent: true,
           },
         });
         reset();
@@ -103,26 +97,20 @@ export function BrandQuickEditForm({ currentUser, open, onClose, update }) {
       PaperProps={{ sx: { maxWidth: 720 } }}
     >
       <Form methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Quick {update ? 'Update' : 'Create'}</DialogTitle>
+        <DialogTitle>Send notification for {update ? 'single customer' : 'all customers'}</DialogTitle>
+
         <DialogContent>
           {/* <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
             Account is waiting for confirmation
           </Alert> */}
 
-          <Box
-            rowGap={3}
-            columnGap={2}
-            display="grid"
-            gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-            mt={2}
-          >
-            <Field.Text name="name" label="Name" />
-            {/* <Field.Text name="gameOpenTime" label="Open Time" type="time" />
-            <Field.Text name="gameClosingTime" label="Close Time" type="time" />
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Description</Typography>
-              <Field.Editor name="description" sx={{ maxHeight: 480 }} />
-            </Stack> */}
+          <Box sx={{ display: 'flex', flexDirection: 'column' ,mt:2}}>
+            <Box sx={{ px: '5rem' }}>
+              <Field.Text name="title" label="Title" />
+            </Box>
+            <Box mt={3} sx={{ px: '5rem' }}>
+              <Field.Text name="description" label="Description" multiline rows={3} />
+            </Box>
           </Box>
         </DialogContent>
 
@@ -132,7 +120,7 @@ export function BrandQuickEditForm({ currentUser, open, onClose, update }) {
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Quick {update ? 'Update' : 'Create'}
+            Send
           </LoadingButton>
         </DialogActions>
       </Form>

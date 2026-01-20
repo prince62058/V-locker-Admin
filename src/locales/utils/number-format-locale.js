@@ -10,7 +10,5 @@ export function formatNumberLocale() {
 
   const currentLang = allLangs.find((lang) => lang.value === lng);
 
-  if (!currentLang) return null;
-
   return { code: currentLang?.numberFormat.code, currency: currentLang?.numberFormat.currency };
 }

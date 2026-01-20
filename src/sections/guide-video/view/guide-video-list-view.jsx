@@ -7,7 +7,6 @@ import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import TableBody from '@mui/material/TableBody';
-import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -17,8 +16,8 @@ import { useSetState } from 'src/hooks/use-set-state';
 
 import { _roles } from 'src/_mock';
 import { varAlpha } from 'src/theme/styles';
-import { useGetAllUsersQuery } from 'src/redux/rtk/api';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetAllInstallationVideoQuery } from 'src/redux/rtk/api';
 
 import { Scrollbar } from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -34,28 +33,30 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { UserTableRow } from '../user-table-row';
-import { UserTableToolbar } from '../user-table-toolbar';
-import { UserQuickEditForm } from '../user-quick-edit-form';
+import { GuideVideoTableRow } from '../guide-video-table-row';
+import { GuideVideoTableToolbar } from '../guide-video-table-toolbar';
+import { GuideVideoQuickEditForm } from '../guide-video-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
-  { value: 'false', label: 'Active' },
-  { value: 'true', label: 'Disable' },
+  // { value: 'false', label: 'Active' },
+  // { value: 'true', label: 'Disable' },
 ];
 
 const TABLE_HEAD = [
   { id: 'sno', label: 'S No.', width: 100 },
-  { id: 'name', label: 'Name & Phone', width: 180 },
-  { id: 'status', label: 'Disable', width: 100 },
+  { id: 'name', label: 'Title', width: 180 },
+  { id: 'channel', label: 'Channel', width: 180 },
+  { id: 'description', label: 'Description', width: 180 },
+  // { id: 'status', label: 'Disable', width: 100 },
   { id: 'action', label: 'Action', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export function UserListView() {
+export function GuideVideoListView() {
   const table = useTable();
 
   const router = useRouter();
@@ -74,8 +75,7 @@ export function UserListView() {
     setCurrentPage(newPage);
   }, []);
 
-  const { data, isLoading } = useGetAllUsersQuery({
-    type: 'USER',
+  const { data, isLoading } = useGetAllInstallationVideoQuery({
     status: filters.state.status,
     page: currentPage,
     search: filters.state.name,
@@ -117,8 +117,8 @@ export function UserListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="User List"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'User' }]}
+          heading="Guide Video List"
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Guide Video' }]}
           action={
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {/* <LoadingButton
@@ -150,13 +150,13 @@ export function UserListView() {
               </LoadingButton> */}
               <Button
                 variant="contained"
-                startIcon={<NotificationAddIcon icon="mingcute:add-line" />}
+                // startIcon={<NotificationAddIcon icon="mingcute:add-line" />}
                 onClick={() => {
                   setIsUpdate(false);
                   quickEdit.onTrue();
                 }}
               >
-                Send Notification
+                New Guide Video
               </Button>
             </Box>
           }
@@ -178,7 +178,7 @@ export function UserListView() {
             ))}
           </Tabs>
 
-          <UserTableToolbar
+          <GuideVideoTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
             options={{ roles: _roles }}
@@ -196,7 +196,7 @@ export function UserListView() {
 
                 <TableBody>
                   {dataFiltered?.map((row, i) => (
-                    <UserTableRow
+                    <GuideVideoTableRow
                       key={row._id}
                       row={row}
                       index={i}
@@ -249,7 +249,11 @@ export function UserListView() {
           </Button>
         }
       />
-      <UserQuickEditForm update={isUpdate} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <GuideVideoQuickEditForm
+        update={isUpdate}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+      />
     </>
   );
 }

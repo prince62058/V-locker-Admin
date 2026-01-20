@@ -116,8 +116,8 @@ export function KeysListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Loan Request List"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Loan Request' }]}
+          heading="Loan Keys Request List"
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Loan Keys Request' }]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
@@ -215,10 +215,8 @@ export function KeysListView() {
 function applyFilter({ inputData, comparator, filters }) {
   const { name, status, role } = filters;
 
-  if (!inputData) return [];
-
   if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
+    inputData = inputData?.filter((user) => role.includes(user.role));
   }
 
   return inputData;

@@ -14,6 +14,7 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import NoPreview from 'src/assets/NoPreview.jpg';
 import { useUpdateLoanStatusMutation } from 'src/redux/rtk/api';
 
 import { Iconify } from 'src/components/iconify';
@@ -90,10 +91,7 @@ export function KeysTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar
-              alt={row?.userId?.name}
-              src={`${import.meta.env.VITE_APP_BASE_URL}/${row?.userId?.profileUrl}`}
-            />
+            <Avatar alt={row?.userId?.name} src={row?.userId?.profileUrl || NoPreview} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Box component="span" sx={{ color: 'text.disabled' }}>
@@ -107,18 +105,18 @@ export function KeysTableRow({
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.requestKeys}</TableCell>
-        <TableCell sx={{ whiteSpace: 'wrap' }}>{row.reason || '-'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'wrap' }}>{row.reason || 'N/A'}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Chip
             key={row?._id}
-            label={row?.status || 'Unknown'}
+            label={row?.status}
             variant="outlined"
             color={
               (row?.status === 'Approved' && 'primary') ||
               (row?.status === 'Pending' && 'secondary') ||
               (row?.status === 'Rejected' && 'error') ||
-              'default'
+              undefined
             }
           />
         </TableCell>

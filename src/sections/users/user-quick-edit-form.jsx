@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -32,7 +31,7 @@ export function UserQuickEditForm({ currentUser, open, onClose, update }) {
   const defaultValues = useMemo(
     () => ({
       title: '',
-
+      silent: true,
       description: '',
     }),
     []
@@ -58,6 +57,7 @@ export function UserQuickEditForm({ currentUser, open, onClose, update }) {
             userId: currentUser?._id,
             title: data.title,
             bodi: data.description,
+            silent: true,
           },
         });
         reset();
@@ -72,6 +72,7 @@ export function UserQuickEditForm({ currentUser, open, onClose, update }) {
           data: {
             title: data.title,
             bodi: data.description,
+            silent: true,
           },
         });
         reset();
@@ -99,11 +100,11 @@ export function UserQuickEditForm({ currentUser, open, onClose, update }) {
         <DialogTitle>Send notification for {update ? 'single user' : 'all users'}</DialogTitle>
 
         <DialogContent>
-          <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
+          {/* <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
             Account is waiting for confirmation
-          </Alert>
+          </Alert> */}
 
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column' ,mt:2}}>
             <Box sx={{ px: '5rem' }}>
               <Field.Text name="title" label="Title" />
             </Box>

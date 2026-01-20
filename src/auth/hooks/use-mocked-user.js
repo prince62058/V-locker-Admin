@@ -19,7 +19,7 @@ export function useMockedUser() {
     id: `${userData?.id ?? userData?._id}`,
     displayName: 'V-Locker Admin',
     email: `${userData?.email}`,
-    photoURL: `${import.meta.env.VITE_APP_BASE_URL}/${userData?.profileUrl}`,
+    photoURL: userData?.profileUrl,
     phoneNumber: _mock.phoneNumber(1),
     country: _mock.countryNames(1),
     address: 'Peplani, bhopal',
