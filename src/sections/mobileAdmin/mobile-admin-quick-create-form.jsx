@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -6,20 +6,24 @@ import * as Yup from 'yup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import InputAdornment from '@mui/material/InputAdornment';
 
 import { useCreateMobileAdminMutation } from 'src/redux/rtk/api';
 
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { RHFTextField } from 'src/components/hook-form';
 import { Form as FormProvider } from 'src/components/hook-form/form-provider';
 
 // ----------------------------------------------------------------------
 
 export default function MobileAdminQuickCreateForm({ open, onClose }) {
+  const [showPassword, setShowPassword] = useState(false);
   const [createMobileAdmin, { isLoading }] = useCreateMobileAdminMutation();
 
   const NewUserSchema = Yup.object().shape({
@@ -88,7 +92,20 @@ export default function MobileAdminQuickCreateForm({ open, onClose }) {
           >
             <RHFTextField name="name" label="Full Name" />
             <RHFTextField name="email" label="Email Address" />
-            <RHFTextField name="password" label="Password" type="password" />
+            <RHFTextField
+              name="password"
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                      <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
           </Box>
         </DialogContent>
 
