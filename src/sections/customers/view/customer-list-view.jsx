@@ -17,8 +17,8 @@ import { useSetState } from 'src/hooks/use-set-state';
 
 import { _roles } from 'src/_mock';
 import { varAlpha } from 'src/theme/styles';
-import { useGetAllUsersQuery } from 'src/redux/rtk/api';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetAllCustomersQuery } from 'src/redux/rtk/api';
 
 import { Scrollbar } from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -34,9 +34,9 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { UserTableRow } from '../user-table-row';
-import { UserTableToolbar } from '../user-table-toolbar';
-import { UserQuickEditForm } from '../user-quick-edit-form';
+import { CustomerTableRow } from '../customer-table-row';
+import { CustomerTableToolbar } from '../customer-table-toolbar';
+import { CustomerQuickEditForm } from '../customer-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -49,13 +49,14 @@ const STATUS_OPTIONS = [
 const TABLE_HEAD = [
   { id: 'sno', label: 'S No.', width: 100 },
   { id: 'name', label: 'Name & Phone', width: 180 },
+  { id: 'address', label: 'Address', width: 180 },
   { id: 'status', label: 'Disable', width: 100 },
   { id: 'action', label: 'Action', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export function UserListView() {
+export function CustomerListView() {
   const table = useTable();
 
   const router = useRouter();
@@ -74,8 +75,8 @@ export function UserListView() {
     setCurrentPage(newPage);
   }, []);
 
-  const { data, isLoading } = useGetAllUsersQuery({
-    type: 'USER',
+  const { data, isLoading } = useGetAllCustomersQuery({
+    type: 'CUSTOMER',
     status: filters.state.status,
     page: currentPage,
     search: filters.state.name,
@@ -117,8 +118,8 @@ export function UserListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="User List"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'User' }]}
+          heading="Customer List"
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Customers' }]}
           action={
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {/* <LoadingButton
@@ -178,7 +179,7 @@ export function UserListView() {
             ))}
           </Tabs>
 
-          <UserTableToolbar
+          <CustomerTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
             options={{ roles: _roles }}
@@ -196,7 +197,7 @@ export function UserListView() {
 
                 <TableBody>
                   {dataFiltered?.map((row, i) => (
-                    <UserTableRow
+                    <CustomerTableRow
                       key={row._id}
                       row={row}
                       index={i}
@@ -249,7 +250,7 @@ export function UserListView() {
           </Button>
         }
       />
-      <UserQuickEditForm update={isUpdate} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <CustomerQuickEditForm update={isUpdate} open={quickEdit.value} onClose={quickEdit.onFalse} />
     </>
   );
 }

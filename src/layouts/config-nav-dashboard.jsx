@@ -76,20 +76,32 @@ const routes = [
   {
     title: 'Brands',
     path: paths.dashboard.brand.list,
-    icon: ICONS.blank,
+    icon: ICONS.job,
     permission: 'BRAND',
   },
   {
     title: 'Models',
     path: paths.dashboard.model.list,
-    icon: ICONS.blank,
+    icon: ICONS.external,
     permission: 'MODEL',
   },
   {
     title: 'States',
     path: paths.dashboard.state.list,
-    icon: ICONS.blank,
+    icon: ICONS.booking,
     permission: 'STATE',
+  },
+  {
+    title: 'Feedback',
+    path: paths.dashboard.feedback.list,
+    icon: ICONS.parameter,
+    permission: 'FEEDBACK',
+  },
+  {
+    title: 'Guide Videos',
+    path: paths.dashboard.guideVideo.list,
+    icon: ICONS.file,
+    permission: 'GUIDEVIDEOS',
   },
   {
     title: 'Company',
@@ -97,72 +109,6 @@ const routes = [
     icon: ICONS.tour,
     permission: 'COMPANY',
   },
-  // {
-  //   title: 'Games',
-  //   path: paths.dashboard.games.list,
-  //   icon: ICONS.blank,
-  //   permission: 'GAME',
-  // },
-  // {
-  //   title: 'Betting Games',
-  //   path: paths.dashboard.bettingGame.list,
-  //   icon: ICONS.calendar,
-  //   permission: 'BTGAME',
-  // },
-  // {
-  //   title: 'Leadboard',
-  //   path: paths.dashboard.leadboard.list,
-  //   icon: ICONS.product,
-  //   permission: 'LEADBOARD',
-  // },
-  // {
-  //   title: 'Game Rules',
-  //   path: paths.dashboard.gameRules.list,
-  //   icon: ICONS.kanban,
-  //   permission: 'GAMERULE',
-  // },
-  // {
-  //   title: 'Game Result',
-  //   path: paths.dashboard.gameResult.list,
-  //   icon: ICONS.dashboard,
-  //   permission: 'GAMERESULT',
-  // },
-  // {
-  //   title: 'QR Code',
-  //   path: paths.dashboard.qrCode.list,
-  //   icon: ICONS.lock,
-  //   permission: 'QR',
-  // },
-  // {
-  //   title: 'App Info',
-  //   path: paths.dashboard.appInfo.list,
-  //   icon: ICONS.blog,
-  //   permission: 'APPINFO',
-  // },
-  // {
-  //   title: 'Transaction',
-  //   path: paths.dashboard.transaction.list,
-  //   icon: ICONS.banking,
-  //   permission: 'TRANSACTION',
-  // },
-  // {
-  //   title: 'Withdraw',
-  //   path: paths.dashboard.withdraw.list,
-  //   icon: ICONS.invoice,
-  //   permission: 'WITHDRAW',
-  // },
-  // {
-  //   title: 'How To Play',
-  //   path: paths.dashboard.howtoplay.list,
-  //   icon: ICONS.external,
-  //   permission: 'HOWTOPLAY',
-  // },
-  // {
-  //   title: 'Chat',
-  //   path: paths.dashboard.chat.list,
-  //   icon: ICONS.chat,
-  //   permission: 'CHAT',
-  // },
 ];
 
 routes.forEach((route) => {

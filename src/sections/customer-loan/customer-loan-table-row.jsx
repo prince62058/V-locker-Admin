@@ -1,7 +1,7 @@
-import { Chip } from '@mui/material';
 import { toast } from 'sonner';
 
 import Box from '@mui/material/Box';
+import { Chip } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import MenuList from '@mui/material/MenuList';

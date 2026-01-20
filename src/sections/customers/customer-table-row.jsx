@@ -27,11 +27,11 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
-import { UserQuickEditForm } from './user-quick-edit-form';
+import { CustomerQuickEditForm } from './customer-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function UserTableRow({
+export function CustomerTableRow({
   row,
   selected,
   onEditRow,
@@ -70,14 +70,23 @@ export function UserTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row?.name} src={row?.image || NoPreview} />
+            <Avatar alt={row?.customerName} src={row?.profileUrl || NoPreview} />
 
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row?.name || '-'}
+                {row?.customerName || '-'}
               </Box>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row?.phone || '-'}
+                {row?.customerMobileNumber || '-'}
+              </Box>
+            </Stack>
+          </Stack>
+        </TableCell>
+        <TableCell>
+          <Stack spacing={2} direction="row" alignItems="center">
+            <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
+              <Box component="span" sx={{ color: 'text.disabled' }}>
+                {row?.address || '-'}
               </Box>
             </Stack>
           </Stack>
@@ -135,7 +144,7 @@ export function UserTableRow({
 
         <TableCell>
           <Stack direction="row" alignItems="center">
-            <Tooltip title="User Notification" placement="top" arrow>
+            <Tooltip title="Customer Notification" placement="top" arrow>
               <IconButton
                 color={quickEdit.value ? 'inherit' : 'default'}
                 onClick={() => {
@@ -154,7 +163,7 @@ export function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm
+      <CustomerQuickEditForm
         currentUser={row}
         update={isUpdate}
         open={quickEdit.value}
@@ -190,7 +199,7 @@ export function UserTableRow({
           </MenuItem> */}
           <MenuItem
             onClick={() => {
-              navigate(`user/${row?._id}`);
+              navigate(`${row?._id}`);
             }}
           >
             <Iconify icon="solar:eye-bold" />

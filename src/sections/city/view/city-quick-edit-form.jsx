@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
+// import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -101,15 +101,16 @@ export function CityQuickEditForm({ currentUser, open, onClose, update, stateId 
         <DialogTitle>Quick {update ? 'Update' : 'Create'}</DialogTitle>
 
         <DialogContent>
-          <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
+          {/* <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
             Account is waiting for confirmation
-          </Alert>
+          </Alert> */}
 
           <Box
             rowGap={3}
             columnGap={2}
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
+            mt={2}
           >
             {/* Model Name */}
             <Field.Text name="name" label="City Name" />
