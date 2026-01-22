@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react-swc';
 
 // ----------------------------------------------------------------------
 
-const PORT = 3000;
+const PORT = 3001;
 
 const env = loadEnv('all', process.cwd());
 
@@ -40,7 +40,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'https://v-locker.framekarts.com/',
+        target: 'http://localhost:3000/',
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {

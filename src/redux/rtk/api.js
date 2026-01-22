@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const BASE_URL = 'https://vlockerbackend.onrender.com/api/';
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL + '/api/';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -405,7 +405,6 @@ export const api = createApi({
       }),
       invalidatesTags: ['banner'],
     }),
-
 
     // -------------------------------------------- leadboard -------------------------------------------
     getTodayLeadboard: builder.query({

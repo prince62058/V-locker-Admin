@@ -44,18 +44,29 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
       if (type === 'UNINSTALL') newPolicy.isUninstallAllowed = value;
       if (type === 'DEV_OPTIONS') newPolicy.isDeveloperOptionsBlocked = value;
 
+      console.log('🔧 Updating Device Policy:', {
+        type,
+        value,
+        loanId: row._id,
+        newPolicy,
+      });
+
       const res = await updateDevicePolicy({
         loanId: row._id,
         data: newPolicy,
       });
 
+      console.log('📡 API Response:', res);
+
       if (res?.data?.success) {
-        toast.success('Device policy updated');
+        toast.success(`Device policy updated: ${type}`);
         popover.onClose();
       } else {
+        console.error('❌ API Error:', res?.error);
         toast.error(res?.error?.data?.message || 'Failed to update policy');
       }
     } catch (error) {
+      console.error('❌ Exception:', error);
       toast.error('Something went wrong');
     }
   };
@@ -265,8 +276,8 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
                   }
                 />
                 {row.devicePolicy?.isDeveloperOptionsBlocked ?? true
-                  ? 'Enable Version Click'
-                  : 'Disable Version Click'}
+                  ? 'Enable Developer Mode'
+                  : 'Disable Developer Mode'}
               </MenuItem>
             </>
           )}
