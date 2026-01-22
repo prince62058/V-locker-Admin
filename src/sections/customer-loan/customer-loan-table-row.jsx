@@ -42,6 +42,7 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
 
       if (type === 'RESET') newPolicy.isResetAllowed = value;
       if (type === 'UNINSTALL') newPolicy.isUninstallAllowed = value;
+      if (type === 'DEV_OPTIONS') newPolicy.isDeveloperOptionsBlocked = value;
 
       const res = await updateDevicePolicy({
         loanId: row._id,
@@ -238,6 +239,34 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
                   }
                 />
                 {row.devicePolicy?.isUninstallAllowed ? 'Disable Uninstall' : 'Enable Uninstall'}
+              </MenuItem>
+
+              <MenuItem
+                onClick={() =>
+                  handlePolicyChange(
+                    'DEV_OPTIONS',
+                    // If currently blocked (true), we want to set to false (allow).
+                    // If currently allowed (false), we want to set to true (block).
+                    !(row.devicePolicy?.isDeveloperOptionsBlocked ?? true)
+                  )
+                }
+                sx={{
+                  color:
+                    row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                      ? 'success.main'
+                      : 'error.main',
+                }}
+              >
+                <Iconify
+                  icon={
+                    row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                      ? 'eva:checkmark-circle-2-fill'
+                      : 'eva:slash-fill'
+                  }
+                />
+                {row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                  ? 'Enable Version Click'
+                  : 'Disable Version Click'}
               </MenuItem>
             </>
           )}

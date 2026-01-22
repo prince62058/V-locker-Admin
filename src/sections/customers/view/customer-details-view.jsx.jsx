@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import { Grid, Chip, Stack, Avatar, Divider } from '@mui/material';
+import { Grid, Chip, Stack, Avatar, Divider, Switch } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 
@@ -13,7 +13,7 @@ import { fDate } from 'src/utils/format-time';
 
 import NoPreview from 'src/assets/NoPreview.jpg';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useCustomerDetailQuery } from 'src/redux/rtk/api';
+import { useCustomerDetailQuery, useUpdateDevicePolicyMutation } from 'src/redux/rtk/api';
 
 import { SplashScreen } from 'src/components/loading-screen';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -22,6 +22,24 @@ const UserDetailsPage = () => {
   const { id } = useParams(); // get id from the route
   const location = useLocation();
   const { data: customerDetails, isLoading } = useCustomerDetailQuery({ customerId: id }); // get the data from the API
+  const [updateDevicePolicy] = useUpdateDevicePolicyMutation();
+
+  const handlePolicyChange = async (loanId, currentPolicy, newValue) => {
+    try {
+      const updatedPolicy = {
+        ...currentPolicy,
+        isDeveloperOptionsBlocked: newValue,
+      };
+      await updateDevicePolicy({
+        loanId,
+        data: updatedPolicy,
+      }).unwrap();
+      // Optional: Show success toast
+    } catch (error) {
+      console.error('Failed to update policy:', error);
+      // Optional: Show error toast
+    }
+  };
 
   return isLoading && !customerDetails ? (
     <SplashScreen />
@@ -306,6 +324,26 @@ const UserDetailsPage = () => {
                         </Typography>
 
                         <Chip label={loan?.deviceUnlockStatus} variant="outlined" color="primary" />
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: 2,
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                          Block Developer Mode (Version):
+                        </Typography>
+                        <Switch
+                          checked={loan?.devicePolicy?.isDeveloperOptionsBlocked ?? true}
+                          onChange={(e) =>
+                            handlePolicyChange(loan._id, loan?.devicePolicy, e.target.checked)
+                          }
+                          inputProps={{ 'aria-label': 'controlled' }}
+                        />
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                         <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
