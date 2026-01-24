@@ -5,16 +5,24 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
+import Stack from '@mui/material/Stack';
 import TableBody from '@mui/material/TableBody';
+import IconButton from '@mui/material/IconButton';
 
+import Tooltip from '@mui/material/Tooltip';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { Iconify } from 'src/components/iconify';
 
 import { useSetState } from 'src/hooks/use-set-state';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetAllCustomerLoanQuery } from 'src/redux/rtk/api';
+import {
+  useGetAllCustomerLoanQuery,
+  useLockDeviceBulkMutation,
+  useUnlockDeviceBulkMutation,
+} from 'src/redux/rtk/api';
 
 import { Scrollbar } from 'src/components/scrollbar';
 import { SplashScreen } from 'src/components/loading-screen';
@@ -26,6 +34,7 @@ import {
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
+  TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 
@@ -58,6 +67,8 @@ export function CustomerLoanListView() {
   const table = useTable();
 
   const router = useRouter();
+  const [lockDeviceBulk] = useLockDeviceBulkMutation();
+  const [unlockDeviceBulk] = useUnlockDeviceBulkMutation();
 
   const filters = useSetState({ name: '', status: '' });
 
@@ -93,6 +104,28 @@ export function CustomerLoanListView() {
     [filters, table]
   );
 
+  const handleBulkLock = async () => {
+    try {
+      const res = await lockDeviceBulk(table.selected);
+      if (res?.data?.success) {
+        table.onSelectAllRows(false, []);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleBulkUnlock = async () => {
+    try {
+      const res = await unlockDeviceBulk(table.selected);
+      if (res?.data?.success) {
+        table.onSelectAllRows(false, []);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return isLoading && !data ? (
     <SplashScreen />
   ) : (
@@ -126,6 +159,38 @@ export function CustomerLoanListView() {
                 rowCount={dataFiltered?.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id)
+                  )
+                }
+              />
+
+              <TableSelectedAction
+                dense={table.dense}
+                numSelected={table.selected.length}
+                rowCount={dataFiltered?.length}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    dataFiltered.map((row) => row._id)
+                  )
+                }
+                action={
+                  <Stack direction="row">
+                    <Tooltip title="Lock">
+                      <IconButton color="error" onClick={handleBulkLock}>
+                        <Iconify icon="eva:lock-fill" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Unlock">
+                      <IconButton color="success" onClick={handleBulkUnlock}>
+                        <Iconify icon="eva:unlock-fill" />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+                }
               />
 
               <TableBody>
@@ -135,6 +200,8 @@ export function CustomerLoanListView() {
                     row={row}
                     index={i}
                     currentPage={currentPage}
+                    selected={table.selected.includes(row._id)}
+                    onSelectRow={() => table.onSelectRow(row._id)}
                   />
                 ))}
 

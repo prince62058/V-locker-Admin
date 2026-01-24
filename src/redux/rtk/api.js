@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const BASE_URL = import.meta.env.VITE_APP_BASE_URL + '/api/';
+// const BASE_URL = import.meta.env.VITE_APP_BASE_URL + '/api/';
+const BASE_URL = 'http://localhost:3000/api/';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -155,6 +156,33 @@ export const api = createApi({
         url: `customerLoan/policy/${loanId}`,
         method: 'POST',
         body: data,
+      }),
+      invalidatesTags: ['customer-loans'],
+    }),
+
+    lockDeviceBulk: builder.mutation({
+      query: (loanIds) => ({
+        url: `customerLoan/bulk/lock`,
+        method: 'POST',
+        body: { loanIds },
+      }),
+      invalidatesTags: ['customer-loans'],
+    }),
+
+    unlockDeviceBulk: builder.mutation({
+      query: (loanIds) => ({
+        url: `customerLoan/bulk/unlock`,
+        method: 'POST',
+        body: { loanIds },
+      }),
+      invalidatesTags: ['customer-loans'],
+    }),
+
+    updateDevicePolicyBulk: builder.mutation({
+      query: ({ loanIds, data }) => ({
+        url: `customerLoan/bulk/policy`,
+        method: 'POST',
+        body: { loanIds, policy: data },
       }),
       invalidatesTags: ['customer-loans'],
     }),
@@ -480,6 +508,9 @@ export const {
   useLockDeviceMutation,
   useUnlockDeviceMutation,
   useUpdateDevicePolicyMutation,
+  useLockDeviceBulkMutation,
+  useUnlockDeviceBulkMutation,
+  useUpdateDevicePolicyBulkMutation,
   useGetAllLoanQuery,
   useUpdateLoanStatusMutation,
   useSendNotificationSingleAndAllUserMutation,

@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import Checkbox from '@mui/material/Checkbox';
 
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
@@ -27,7 +28,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 import { useState } from 'react';
 
-export function CustomerLoanTableRow({ row, index, currentPage }) {
+export function CustomerLoanTableRow({ row, index, currentPage, selected, onSelectRow }) {
   const popover = usePopover();
   const [updateCustomerLoan] = useUpdateCustomerLoanMutation();
   const [lockDevice] = useLockDeviceMutation();
@@ -47,6 +48,15 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
       if (type === 'RESET') newPolicy.isResetAllowed = value;
       if (type === 'UNINSTALL') newPolicy.isUninstallAllowed = value;
       if (type === 'DEV_OPTIONS') newPolicy.isDeveloperOptionsBlocked = value;
+      if (type === 'WHATSAPP') newPolicy.isWhatsAppBlocked = value;
+      if (type === 'INSTAGRAM') newPolicy.isInstagramBlocked = value;
+      if (type === 'SNAPCHAT') newPolicy.isSnapchatBlocked = value;
+      if (type === 'YOUTUBE') newPolicy.isYouTubeBlocked = value;
+      if (type === 'FACEBOOK') newPolicy.isFacebookBlocked = value;
+      if (type === 'DIALER') newPolicy.isDialerBlocked = value;
+      if (type === 'MESSAGES') newPolicy.isMessagesBlocked = value;
+      if (type === 'PLAYSTORE') newPolicy.isPlayStoreBlocked = value;
+      if (type === 'CHROME') newPolicy.isChromeBlocked = value;
 
       console.log('🔧 Updating Device Policy:', {
         type,
@@ -194,7 +204,11 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
 
   return (
     <>
-      <TableRow hover tabIndex={-1}>
+      <TableRow hover tabIndex={-1} selected={selected}>
+        <TableCell padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
+        </TableCell>
+
         <TableCell sx={{ pl: 3.5 }}> {(currentPage - 1) * 20 + index + 1}</TableCell>
 
         <TableCell>
@@ -339,24 +353,24 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
               onClick={() =>
                 handlePolicyChange(
                   'DEV_OPTIONS',
-                  !(row.devicePolicy?.isDeveloperOptionsBlocked ?? true)
+                  !(row.devicePolicy?.isDeveloperOptionsBlocked ?? false)
                 )
               }
               sx={{
                 color:
-                  row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                  row.devicePolicy?.isDeveloperOptionsBlocked ?? false
                     ? 'success.main'
                     : 'error.main',
               }}
             >
               <Iconify
                 icon={
-                  row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                  row.devicePolicy?.isDeveloperOptionsBlocked ?? false
                     ? 'eva:checkmark-circle-2-fill'
                     : 'eva:slash-fill'
                 }
               />
-              {row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+              {row.devicePolicy?.isDeveloperOptionsBlocked ?? false
                 ? 'Enable Developer Mode'
                 : 'Disable Developer Mode'}
             </MenuItem>
@@ -398,6 +412,60 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
               {row.devicePolicy?.isWallpaperEnabled ? 'Disable Wallpaper' : 'Enable Wallpaper'}
             </MenuItem>
           )}
+
+          <Box sx={{ my: 1, borderTop: (theme) => `dashed 1px ${theme.palette.divider}` }} />
+
+          {/* Social & System App Blocks */}
+          {[
+            {
+              id: 'WHATSAPP',
+              label: 'WhatsApp',
+              key: 'isWhatsAppBlocked',
+              icon: 'logos:whatsapp-icon',
+            },
+            {
+              id: 'INSTAGRAM',
+              label: 'Instagram',
+              key: 'isInstagramBlocked',
+              icon: 'skill-icons:instagram',
+            },
+            {
+              id: 'SNAPCHAT',
+              label: 'Snapchat',
+              key: 'isSnapchatBlocked',
+              icon: 'logos:snapchat-icon',
+            },
+            {
+              id: 'YOUTUBE',
+              label: 'YouTube',
+              key: 'isYouTubeBlocked',
+              icon: 'logos:youtube-icon',
+            },
+            { id: 'FACEBOOK', label: 'Facebook', key: 'isFacebookBlocked', icon: 'logos:facebook' },
+            { id: 'DIALER', label: 'Dialer', key: 'isDialerBlocked', icon: 'eva:phone-fill' },
+            {
+              id: 'MESSAGES',
+              label: 'Messages',
+              key: 'isMessagesBlocked',
+              icon: 'eva:message-square-fill',
+            },
+            {
+              id: 'PLAYSTORE',
+              label: 'Play Store',
+              key: 'isPlayStoreBlocked',
+              icon: 'logos:google-play-icon',
+            },
+            { id: 'CHROME', label: 'Chrome', key: 'isChromeBlocked', icon: 'logos:chrome' },
+          ].map((app) => (
+            <MenuItem
+              key={app.id}
+              onClick={() => handlePolicyChange(app.id, !(row.devicePolicy?.[app.key] ?? false))}
+              sx={{ color: row.devicePolicy?.[app.key] ? 'success.main' : 'error.main' }}
+            >
+              <Iconify icon={app.icon} />
+              {row.devicePolicy?.[app.key] ? `Enable ${app.label}` : `Disable ${app.label}`}
+            </MenuItem>
+          ))}
         </MenuList>
       </CustomPopover>
     </>
