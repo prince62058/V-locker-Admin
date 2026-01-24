@@ -25,12 +25,16 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
+import { useState } from 'react';
+
 export function CustomerLoanTableRow({ row, index, currentPage }) {
   const popover = usePopover();
   const [updateCustomerLoan] = useUpdateCustomerLoanMutation();
   const [lockDevice] = useLockDeviceMutation();
   const [unlockDevice] = useUnlockDeviceMutation();
   const [updateDevicePolicy] = useUpdateDevicePolicyMutation();
+  const [wallpaperDialogOpen, setWallpaperDialogOpen] = useState(false);
+  const [uploadingWallpaper, setUploadingWallpaper] = useState(false);
 
   const handlePolicyChange = async (type, value) => {
     try {
@@ -102,6 +106,86 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
         popover.onClose();
       } else {
         toast.error(res?.error?.data?.message || 'Failed to update device status');
+      }
+    } catch (error) {
+      toast.error('Something went wrong');
+    }
+  };
+
+  const handleWallpaperUpload = async (event) => {
+    try {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+
+      setUploadingWallpaper(true);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadRes = await fetch(`${import.meta.env.VITE_APP_BASE_URL}/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      console.log('Upload status:', uploadRes.status);
+      if (!uploadRes.ok) {
+        const errorText = await uploadRes.text();
+        console.error('Upload failed details:', errorText);
+        throw new Error(`Upload failed with status ${uploadRes.status}`);
+      }
+
+      const uploadData = await uploadRes.json();
+      const imageUrl = `${import.meta.env.VITE_APP_BASE_URL}/${uploadData.filePath}`;
+
+      const currentPolicy = row.devicePolicy || {};
+      const newPolicy = {
+        ...currentPolicy,
+        isWallpaperEnabled: true,
+        wallpaperUrl: imageUrl,
+      };
+
+      const res = await updateDevicePolicy({
+        loanId: row._id,
+        data: newPolicy,
+      });
+
+      if (res?.data?.success) {
+        toast.success('Wallpaper uploaded and enabled!');
+        popover.onClose();
+      } else {
+        toast.error(res?.error?.data?.message || 'Failed to update wallpaper');
+      }
+    } catch (error) {
+      console.error('Wallpaper upload error:', error);
+      toast.error('Failed to upload wallpaper');
+    } finally {
+      setUploadingWallpaper(false);
+    }
+  };
+
+  const handleWallpaperToggle = async () => {
+    try {
+      const currentPolicy = row.devicePolicy || {};
+      const newPolicy = {
+        ...currentPolicy,
+        isWallpaperEnabled: !currentPolicy.isWallpaperEnabled,
+      };
+
+      const res = await updateDevicePolicy({
+        loanId: row._id,
+        data: newPolicy,
+      });
+
+      if (res?.data?.success) {
+        toast.success(`Wallpaper ${newPolicy.isWallpaperEnabled ? 'enabled' : 'disabled'}!`);
+        popover.onClose();
+      } else {
+        toast.error(res?.error?.data?.message || 'Failed to toggle wallpaper');
       }
     } catch (error) {
       toast.error('Something went wrong');
@@ -227,59 +311,92 @@ export function CustomerLoanTableRow({ row, index, currentPage }) {
 
           {/* Device Policy Controls */}
           {row.loanStatus === 'APPROVED' && (
-            <>
-              <MenuItem
-                onClick={() => handlePolicyChange('RESET', !row.devicePolicy?.isResetAllowed)}
-                sx={{ color: row.devicePolicy?.isResetAllowed ? 'error.main' : 'success.main' }}
-              >
-                <Iconify
-                  icon={row.devicePolicy?.isResetAllowed ? 'eva:slash-fill' : 'eva:refresh-fill'}
-                />
-                {row.devicePolicy?.isResetAllowed ? 'Disable Reset' : 'Enable Reset'}
-              </MenuItem>
+            <MenuItem
+              onClick={() => handlePolicyChange('RESET', !row.devicePolicy?.isResetAllowed)}
+              sx={{ color: row.devicePolicy?.isResetAllowed ? 'error.main' : 'success.main' }}
+            >
+              <Iconify
+                icon={row.devicePolicy?.isResetAllowed ? 'eva:slash-fill' : 'eva:refresh-fill'}
+              />
+              {row.devicePolicy?.isResetAllowed ? 'Disable Reset' : 'Enable Reset'}
+            </MenuItem>
+          )}
 
-              <MenuItem
-                onClick={() =>
-                  handlePolicyChange('UNINSTALL', !row.devicePolicy?.isUninstallAllowed)
-                }
-                sx={{ color: row.devicePolicy?.isUninstallAllowed ? 'error.main' : 'success.main' }}
-              >
-                <Iconify
-                  icon={
-                    row.devicePolicy?.isUninstallAllowed ? 'eva:slash-fill' : 'eva:trash-2-fill'
-                  }
-                />
-                {row.devicePolicy?.isUninstallAllowed ? 'Disable Uninstall' : 'Enable Uninstall'}
-              </MenuItem>
+          {row.loanStatus === 'APPROVED' && (
+            <MenuItem
+              onClick={() => handlePolicyChange('UNINSTALL', !row.devicePolicy?.isUninstallAllowed)}
+              sx={{ color: row.devicePolicy?.isUninstallAllowed ? 'error.main' : 'success.main' }}
+            >
+              <Iconify
+                icon={row.devicePolicy?.isUninstallAllowed ? 'eva:slash-fill' : 'eva:trash-2-fill'}
+              />
+              {row.devicePolicy?.isUninstallAllowed ? 'Disable Uninstall' : 'Enable Uninstall'}
+            </MenuItem>
+          )}
 
-              <MenuItem
-                onClick={() =>
-                  handlePolicyChange(
-                    'DEV_OPTIONS',
-                    // If currently blocked (true), we want to set to false (allow).
-                    // If currently allowed (false), we want to set to true (block).
-                    !(row.devicePolicy?.isDeveloperOptionsBlocked ?? true)
-                  )
+          {row.loanStatus === 'APPROVED' && (
+            <MenuItem
+              onClick={() =>
+                handlePolicyChange(
+                  'DEV_OPTIONS',
+                  !(row.devicePolicy?.isDeveloperOptionsBlocked ?? true)
+                )
+              }
+              sx={{
+                color:
+                  row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                    ? 'success.main'
+                    : 'error.main',
+              }}
+            >
+              <Iconify
+                icon={
+                  row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                    ? 'eva:checkmark-circle-2-fill'
+                    : 'eva:slash-fill'
                 }
-                sx={{
-                  color:
-                    row.devicePolicy?.isDeveloperOptionsBlocked ?? true
-                      ? 'success.main'
-                      : 'error.main',
-                }}
-              >
-                <Iconify
-                  icon={
-                    row.devicePolicy?.isDeveloperOptionsBlocked ?? true
-                      ? 'eva:checkmark-circle-2-fill'
-                      : 'eva:slash-fill'
-                  }
-                />
-                {row.devicePolicy?.isDeveloperOptionsBlocked ?? true
-                  ? 'Enable Developer Mode'
-                  : 'Disable Developer Mode'}
-              </MenuItem>
-            </>
+              />
+              {row.devicePolicy?.isDeveloperOptionsBlocked ?? true
+                ? 'Enable Developer Mode'
+                : 'Disable Developer Mode'}
+            </MenuItem>
+          )}
+
+          {row.loanStatus === 'APPROVED' && (
+            <MenuItem
+              onClick={() => {
+                document.getElementById(`wallpaper-upload-${row._id}`).click();
+              }}
+              sx={{ color: 'primary.main' }}
+              disabled={uploadingWallpaper}
+            >
+              <Iconify icon="eva:image-fill" />
+              {uploadingWallpaper ? 'Uploading...' : 'Upload Wallpaper'}
+            </MenuItem>
+          )}
+
+          {row.loanStatus === 'APPROVED' && (
+            <input
+              id={`wallpaper-upload-${row._id}`}
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={handleWallpaperUpload}
+            />
+          )}
+
+          {row.loanStatus === 'APPROVED' && (
+            <MenuItem
+              onClick={handleWallpaperToggle}
+              sx={{
+                color: row.devicePolicy?.isWallpaperEnabled ? 'error.main' : 'success.main',
+              }}
+            >
+              <Iconify
+                icon={row.devicePolicy?.isWallpaperEnabled ? 'eva:eye-off-fill' : 'eva:eye-fill'}
+              />
+              {row.devicePolicy?.isWallpaperEnabled ? 'Disable Wallpaper' : 'Enable Wallpaper'}
+            </MenuItem>
           )}
         </MenuList>
       </CustomPopover>
