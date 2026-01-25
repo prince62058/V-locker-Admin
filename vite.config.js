@@ -40,7 +40,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000/',
+        target: 'https://vlockerbackend.onrender.com/',
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
