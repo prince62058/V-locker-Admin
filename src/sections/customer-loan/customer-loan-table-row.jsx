@@ -463,7 +463,7 @@ export function CustomerLoanTableRow({ row, index, currentPage, selected, onSele
               sx={{ color: row.devicePolicy?.[app.key] ? 'success.main' : 'error.main' }}
             >
               <Iconify icon={app.icon} />
-              {row.devicePolicy?.[app.key] ? `Enable ${app.label}` : `Disable ${app.label}`}
+              {row.devicePolicy?.[app.key] ? `Unhide ${app.label}` : `Hide ${app.label}`}
             </MenuItem>
           ))}
         </MenuList>

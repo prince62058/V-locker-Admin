@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const BASE_URL = 'https://v-locker.framekarts.com/api/';
+const BASE_URL = 'http://localhost:3000/api/';
 
 export const api = createApi({
   reducerPath: 'api',

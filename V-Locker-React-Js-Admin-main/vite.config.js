@@ -40,7 +40,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'https://v-locker.framekarts.com/',
+        target: 'http://localhost:3000/',
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {

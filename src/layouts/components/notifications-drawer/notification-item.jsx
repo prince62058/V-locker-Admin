@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box';
+   import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -124,7 +124,7 @@ export function NotificationItem({ notification }) {
         bgcolor: 'background.neutral',
       }}
     >
-      <FileThumbnail file="http://localhost:8080/httpsdesign-suriname-2015.mp3" />
+      <FileThumbnail file="#" />
 
       <Stack spacing={1} direction={{ xs: 'column', sm: 'row' }} flexGrow={1} sx={{ minWidth: 0 }}>
         <ListItemText
