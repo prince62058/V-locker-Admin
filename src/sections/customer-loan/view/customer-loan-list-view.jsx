@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -22,6 +23,7 @@ import {
   useGetAllCustomerLoanQuery,
   useLockDeviceBulkMutation,
   useUnlockDeviceBulkMutation,
+  useUpdateDevicePolicyBulkMutation,
 } from 'src/redux/rtk/api';
 
 import { Scrollbar } from 'src/components/scrollbar';
@@ -69,6 +71,7 @@ export function CustomerLoanListView() {
   const router = useRouter();
   const [lockDeviceBulk] = useLockDeviceBulkMutation();
   const [unlockDeviceBulk] = useUnlockDeviceBulkMutation();
+  const [updateDevicePolicyBulk] = useUpdateDevicePolicyBulkMutation();
 
   const filters = useSetState({ name: '', status: '' });
 
@@ -119,6 +122,21 @@ export function CustomerLoanListView() {
     try {
       const res = await unlockDeviceBulk(table.selected);
       if (res?.data?.success) {
+        table.onSelectAllRows(false, []);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleBulkPolicy = async (policyUpdate) => {
+    try {
+      const res = await updateDevicePolicyBulk({
+        loanIds: table.selected,
+        data: policyUpdate,
+      });
+      if (res?.data?.success) {
+        toast.success('Bulk policy updated!');
         table.onSelectAllRows(false, []);
       }
     } catch (error) {
@@ -187,6 +205,66 @@ export function CustomerLoanListView() {
                     <Tooltip title="Unlock">
                       <IconButton color="success" onClick={handleBulkUnlock}>
                         <Iconify icon="eva:unlock-fill" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Bulk Hide All Apps">
+                      <IconButton
+                        color="warning"
+                        onClick={() =>
+                          handleBulkPolicy({
+                            isWhatsAppBlocked: true,
+                            isInstagramBlocked: true,
+                            isSnapchatBlocked: true,
+                            isYouTubeBlocked: true,
+                            isFacebookBlocked: true,
+                            isDialerBlocked: true,
+                            isMessagesBlocked: true,
+                            isPlayStoreBlocked: true,
+                            isChromeBlocked: true,
+                          })
+                        }
+                      >
+                        <Iconify icon="eva:eye-off-fill" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Bulk Unhide All Apps">
+                      <IconButton
+                        color="info"
+                        onClick={() =>
+                          handleBulkPolicy({
+                            isWhatsAppBlocked: false,
+                            isInstagramBlocked: false,
+                            isSnapchatBlocked: false,
+                            isYouTubeBlocked: false,
+                            isFacebookBlocked: false,
+                            isDialerBlocked: false,
+                            isMessagesBlocked: false,
+                            isPlayStoreBlocked: false,
+                            isChromeBlocked: false,
+                          })
+                        }
+                      >
+                        <Iconify icon="eva:eye-fill" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Bulk Enable Wallpaper">
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleBulkPolicy({ isWallpaperEnabled: true })}
+                      >
+                        <Iconify icon="eva:image-fill" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Bulk Disable Wallpaper">
+                      <IconButton
+                        color="secondary"
+                        onClick={() => handleBulkPolicy({ isWallpaperEnabled: false })}
+                      >
+                        <Iconify icon="eva:image-off-fill" />
                       </IconButton>
                     </Tooltip>
                   </Stack>
