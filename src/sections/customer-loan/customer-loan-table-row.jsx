@@ -10,6 +10,12 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
@@ -23,6 +29,8 @@ import {
 
 import { Iconify } from 'src/components/iconify';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
+
+import snapchatIcon from 'src/assets/snapchat.png';
 
 // ----------------------------------------------------------------------
 
@@ -202,6 +210,27 @@ export function CustomerLoanTableRow({ row, index, currentPage, selected, onSele
     }
   };
 
+  const [shopNameDialogOpen, setShopNameDialogOpen] = useState(false);
+  const [shopName, setShopName] = useState(row.shopName || '');
+
+  const handleShopNameUpdate = async () => {
+    try {
+      const res = await updateCustomerLoan({
+        loanId: row._id,
+        data: { shopName },
+      });
+      if (res?.data?.success) {
+        toast.success('Shop Name updated successfully');
+        setShopNameDialogOpen(false);
+        popover.onClose();
+      } else {
+        toast.error(res?.error?.data?.message || 'Failed to update Shop Name');
+      }
+    } catch (error) {
+      toast.error('Something went wrong');
+    }
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} selected={selected}>
@@ -290,7 +319,7 @@ export function CustomerLoanTableRow({ row, index, currentPage, selected, onSele
         onClose={popover.onClose}
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
-        <MenuList>
+        <MenuList sx={{ maxHeight: 300, overflowY: 'auto' }}>
           <MenuItem
             disabled={row.loanStatus !== 'PENDING'}
             onClick={() => handleStatus('APPROVED')}
@@ -433,7 +462,8 @@ export function CustomerLoanTableRow({ row, index, currentPage, selected, onSele
               id: 'SNAPCHAT',
               label: 'Snapchat',
               key: 'isSnapchatBlocked',
-              icon: 'logos:snapchat-icon',
+              icon: snapchatIcon,
+              isImage: true,
             },
             {
               id: 'YOUTUBE',
@@ -462,12 +492,54 @@ export function CustomerLoanTableRow({ row, index, currentPage, selected, onSele
               onClick={() => handlePolicyChange(app.id, !(row.devicePolicy?.[app.key] ?? false))}
               sx={{ color: row.devicePolicy?.[app.key] ? 'success.main' : 'error.main' }}
             >
-              <Iconify icon={app.icon} />
+              {app.isImage ? (
+                <Box
+                  component="img"
+                  src={app.icon}
+                  sx={{ width: 20, height: 20, mr: 1, objectFit: 'contain' }}
+                />
+              ) : (
+                <Iconify icon={app.icon} />
+              )}
               {row.devicePolicy?.[app.key] ? `Unhide ${app.label}` : `Hide ${app.label}`}
             </MenuItem>
           ))}
+
+          <Box sx={{ my: 1, borderTop: (theme) => `dashed 1px ${theme.palette.divider}` }} />
+
+          <MenuItem
+            onClick={() => {
+              setShopName(row.shopName || '');
+              setShopNameDialogOpen(true);
+            }}
+          >
+            <Iconify icon="eva:edit-fill" />
+            Edit Shop Name
+          </MenuItem>
         </MenuList>
       </CustomPopover>
+
+      <Dialog open={shopNameDialogOpen} onClose={() => setShopNameDialogOpen(false)}>
+        <DialogTitle>Edit Shop Name</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Shop Name"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={shopName}
+            onChange={(e) => setShopName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShopNameDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleShopNameUpdate} variant="contained">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
